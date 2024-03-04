@@ -60,6 +60,25 @@ def bfs(graph, nsol=4):
                 return
         succes = graph.succesori(curr)
         queue += succes
+      
+        
+def bfs2(graph, nsol=4):
+    queue = [Node(graph.startNode)]
+    while queue:
+        curr = queue.pop(0)
+        
+        succes = graph.succesori(curr)
+        for suc in succes:
+            queue.append(suc)
+        
+            if graph.scop(suc.value):
+                print(repr(suc))
+                nsol -= 1
+                if nsol == 0:
+                    return
+
+        
+    
         
 def dfs(graph, node, nsol = 0):
     
@@ -107,9 +126,13 @@ ends = [5,9]
 nsol = 6
 
 graf = Graph(m, start, ends)
+
+print("=====BFS clasic=================")
 bfs(graf, nsol)
-print("======================")
+print("=====BFS optimizat=================")
+bfs2(graf, nsol)
+print("=====DFS Recursive=================")
 dfs(graf, Node(start),nsol)
-print("======================")
-dfs_nonrec(graf, Node(start),nsol)
+print("=====DFS Non-recursive=================")
+dfs_nonrec(graf,Node(start),nsol)
 
