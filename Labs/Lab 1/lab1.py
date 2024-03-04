@@ -74,7 +74,19 @@ def dfs(graph, node, nsol = 0):
             nsol = dfs(graph,s,nsol)
             
     return nsol
-    
+ 
+  
+def dfs_nonrec(graph, node, nsol = 0):
+    stack = [node]
+    while stack:
+        s = stack.pop()
+        if graph.scop(s.value):
+            print(repr(s))
+            nsol-=1
+            if not nsol:
+                return
+        stack.extend(graph.succesori(s))
+                
         
 
 m = [
@@ -92,9 +104,12 @@ m = [
 
 start = 0
 ends = [5,9]
+nsol = 6
 
 graf = Graph(m, start, ends)
-bfs(graf, 9)
+bfs(graf, nsol)
 print("======================")
-dfs(graf, Node(0),5)
+dfs(graf, Node(start),nsol)
+print("======================")
+dfs_nonrec(graf, Node(start),nsol)
 
