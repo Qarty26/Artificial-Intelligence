@@ -28,6 +28,46 @@ class Node:
     
     def __repr__(self):
         return "{} ({})".format(str(self.value), "->".join([str(x) for x  in self.drumRadacina()]))
+    
+    
+    def afisSolFisier(self, file, output):
+            output = output[11:-1].split("->")
+            optiuni = [
+                ("(Stanga: <barca>)", "<Dreapta>"),
+                ("(Stanga)", "(Dreapta: <barca>)")
+            ]
+            counter_optiuni = 0
+            file_string = ""
+            output.append("(0, 0, 0)")
+
+            n = 0
+            for i in range(len(output) - 1):
+                pozitie_barca = optiuni[counter_optiuni % 2]
+                numbers = output[i][1:-1].split(', ')  
+                next_numbers = output[i+1][1:-1].split(', ')
+
+                misionari = int(numbers[0])
+                canibali = int(numbers[1])
+                misionari_nou = int(next_numbers[0])
+                canibali_nou = int(next_numbers[1])
+
+                if i == 0:
+                    n = misionari
+                misionari_right = n - misionari
+                canibali_right = n - canibali
+
+                file_string += f"{pozitie_barca[0]} {canibali} canibali {misionari} misionari ...... {pozitie_barca[1]} {canibali_right} canibali {misionari_right} misionari\n"
+                if i!=len(output) - 2:
+                    if counter_optiuni % 2 == 0:
+                        file_string += f"\nBarca s-a deplasat de la malul stang la malul drept cu {canibali - canibali_nou} canibali si {misionari - misionari_nou} misionari\n"
+                    elif counter_optiuni % 2 == 1:
+                        file_string += f"\nBarca s-a deplasat de la malul drept la malul stang cu {canibali_nou - canibali} canibali si {misionari_nou - misionari} misionari\n"
+
+                
+                counter_optiuni += 1
+
+            file.writelines(file_string)
+
 
 
 
@@ -96,10 +136,14 @@ class Graph:
 
 def bfs(graph, nsol=4):
     queue = [Node(graph.startNode)]
+    file = open("output.txt", "a")
+    file.truncate(0)
+    
     while queue:
         curr = queue.pop(0)
         if graph.scop(curr.value):
-            print(repr(curr))
+            # print(repr(curr))
+            curr.afisSolFisier(file, repr(curr))
             nsol -= 1
             if nsol == 0:
                 return
@@ -107,79 +151,51 @@ def bfs(graph, nsol=4):
         queue += succes
       
         
-def bfs2(graph, nsol=4):
-    queue = [Node(graph.startNode)]
-    while queue:
-        curr = queue.pop(0)
+# def bfs2(graph, nsol=4):
+#     queue = [Node(graph.startNode)]
+#     while queue:
+#         curr = queue.pop(0)
         
-        succes = graph.succesori(curr)
-        for suc in succes:
-            queue.append(suc)
+#         succes = graph.succesori(curr)
+#         for suc in succes:
+#             queue.append(suc)
         
-            if graph.scop(suc.value):
-                print(repr(suc))
-                nsol -= 1
-                if nsol == 0:
-                    return
+#             if graph.scop(suc.value):
+#                 print(repr(suc))
+#                 nsol -= 1
+#                 if nsol == 0:
+#                     return
 
         
     
         
-def dfs(graph, node, nsol = 0):
+# def dfs(graph, node, nsol = 0):
     
-    if graph.scop(node.value):
-        print(repr(node))
-        nsol-=1
-        return nsol
+#     if graph.scop(node.value):
+#         print(repr(node))
+#         nsol-=1
+#         return nsol
     
-    succesori = graph.succesori(node)
-    for s in succesori:
-        if nsol > 0:
-            nsol = dfs(graph,s,nsol)
+#     succesori = graph.succesori(node)
+#     for s in succesori:
+#         if nsol > 0:
+#             nsol = dfs(graph,s,nsol)
             
-    return nsol
+#     return nsol
  
   
-def dfs_nonrec(graph, node, nsol = 0):
-    stack = [node]
-    while stack:
-        s = stack.pop()
-        if graph.scop(s.value):
-            print(repr(s))
-            nsol-=1
-            if not nsol:
-                return
-        stack.extend(graph.succesori(s))
+# def dfs_nonrec(graph, node, nsol = 0):
+#     stack = [node]
+#     while stack:
+#         s = stack.pop()
+#         if graph.scop(s.value):
+#             print(repr(s))
+#             nsol-=1
+#             if not nsol:
+#                 return
+#         stack.extend(graph.succesori(s))
                 
         
-
-# m = [
-#     [0, 1, 0, 1, 1, 0, 0, 0, 0, 0],
-#     [1, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-#     [0, 1, 0, 0, 0, 1, 0, 1, 0, 0],
-#     [1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-#     [1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-#     [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-#     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-#     [0, 0, 1, 0, 1, 0, 0, 0, 1, 1],
-#     [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-#     [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
-# ]
-
-# start = 0
-# ends = [5,9]
-# nsol = 6
-
-# graf = Graph(m, start, ends)
-
-# print("=====BFS clasic=================")
-# bfs(graf, nsol)
-# print("=====BFS optimizat=================")
-# bfs2(graf, nsol)
-# print("=====DFS Recursive=================")
-# dfs(graf, Node(start),nsol)
-# print("=====DFS Non-recursive=================")
-# dfs_nonrec(graf,Node(start),nsol)
 
 
 f = open("input.txt","r")
