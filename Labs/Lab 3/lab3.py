@@ -138,6 +138,56 @@ def PQaStarSolMultiple(graph, nsol=1):
         succes = graph.succesori(curr)
         for nod in succes:
             pq.put(nod)
+            
+def a_star(graph : Graph , nsol = 1):
+    open = [Node(graph.startNode)]
+    closed = []
+    
+    while open:
+        curr = open.pop(0)
+        if graph.scop(curr.value):
+            print(repr(curr))
+            nsol -= 1
+            if nsol == 0:
+                return
+
+        succesori = graph.succesori(curr)
+        closed.append(curr)
+        
+        for s in succesori:
+            newNode = None
+            if not curr.inDrum(s.value):
+                
+                if s in open:
+                    indexNode = open.index(s)
+
+                    if s.f < open[indexNode].f or (s.f == open[indexNode].f and s.g > open[indexNode].g):
+                        open.pop(indexNode)
+                        s.parent = curr
+                        s.g += curr.g
+                        s.h = graf.estimeaza_h(s.value)
+                        s.f = s.g + s.h
+                        newNode = s
+                        
+                if s in closed:
+                    indexNode = closed.index(s)
+
+                    if s.f < closed[indexNode].f or (s.f == closed[indexNode].f and s.g > closed[indexNode].g):
+                        closed.pop(indexNode)
+                        s.parent = curr
+                        s.g += curr.g
+                        s.h = graf.estimeaza_h(s.value)
+                        s.f = s.g + s.h
+                        newNode = s
+                else:
+                    newNode = s
+
+                if newNode is not None:
+                    open.append(newNode)
+                    open.sort()
+            
+    
+    
 
         
         
@@ -207,6 +257,8 @@ print("######################")
 PQaStarSolMultiple(graf, 1)
 print("######################")
 aStarSolMultiple2(graf,1)
+print("######################")
+a_star(graf,1)
 
 
 
