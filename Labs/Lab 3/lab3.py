@@ -63,7 +63,6 @@ class Graph:
         return lsucc
 
 
-
 def aStarSolMultiple(graph, nsol=1):
     queue = [Node(graph.startNode)] 
     while queue:
@@ -78,6 +77,50 @@ def aStarSolMultiple(graph, nsol=1):
         succes = graph.succesori(curr)
         queue += succes
         queue.sort()
+        
+        
+        
+def bin_search(listaNoduri, nodNou, ls, ld):
+    if len(listaNoduri)==0:
+        return 0
+    if ls==ld:
+        if nodNou.f<listaNoduri[ls].f:
+            return ls
+        elif nodNou.f>listaNoduri[ls].f:
+            return ld+1
+        else: # f-uri egale
+            if nodNou.g < listaNoduri[ls].g:
+                return ld + 1
+            else:
+                return ls
+    else:
+        mij=(ls+ld)//2
+        if nodNou.f<listaNoduri[mij].f:
+            return bin_search(listaNoduri, nodNou, ls, mij)
+        elif nodNou.f>listaNoduri[mij].f:
+            return bin_search(listaNoduri, nodNou, mij+1, ld)
+        else:
+            if nodNou.g < listaNoduri[mij].g:
+                return bin_search(listaNoduri, nodNou, mij + 1, ld)
+            else:
+                return bin_search(listaNoduri, nodNou, ls, mij)
+
+
+def aStarSolMultiple2(graph, nsol=1):
+    queue = [Node(graph.startNode)]
+    while queue:
+        curr = queue.pop(0)
+        if graph.scop(curr.value):
+            print(repr(curr))
+            nsol -= 1
+            if nsol == 0:
+                return
+        succes = graph.succesori(curr)
+        
+        for suc in succes: 
+            insert_index = bin_search(queue, suc,0,len(queue)-1)
+            queue.insert(insert_index, suc)
+        
         
 def PQaStarSolMultiple(graph, nsol=1):
     pq = PriorityQueue()
@@ -160,6 +203,10 @@ scopuri = [4,6]
 
 graf = Graph(m, start, scopuri, h)
 aStarSolMultiple(graf, 1)
+print("######################")
 PQaStarSolMultiple(graf, 1)
+print("######################")
+aStarSolMultiple2(graf,1)
+
 
 
